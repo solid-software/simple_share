@@ -2,7 +2,9 @@ import Flutter
 import UIKit
 
 public class SwiftSimpleSharePlugin: NSObject, FlutterPlugin {
-    
+
+    let controller : FlutterViewController = UIApplication.shared.keyWindow?.rootViewController as! FlutterViewController
+
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "com.juanito21.simpleShare/share", binaryMessenger: registrar.messenger())
         let instance = SwiftSimpleSharePlugin()
@@ -16,6 +18,7 @@ public class SwiftSimpleSharePlugin: NSObject, FlutterPlugin {
             let args = call.arguments as? [String: Any?]
             
             let title = args!["title"] as? String
+            //let message = args!["message"] as? String
             let fileUrl = args!["uri"] as? String
             
             var sharedItems : Array<Any> = Array()
@@ -44,21 +47,14 @@ public class SwiftSimpleSharePlugin: NSObject, FlutterPlugin {
             
             
             let activityViewController = UIActivityViewController(activityItems: sharedItems, applicationActivities: nil)
-
-            if activityViewController.modalPresentationStyle == .popover {
-                if let topController = UIApplication.shared.keyWindow?.rootViewController {
-                    if let presentedView = topController.view {
-                        activityViewController.popoverPresentationController?.sourceView = presentedView // so that iPads won't crash
-                        activityViewController.popoverPresentationController?.sourceRect = CGRect(x: presentedView.bounds.midX, y: presentedView.bounds.midY, width: 0, height: 0)
-                    }
-                }
-            }
+            
+            //            activityViewController.popoverPresentationController?.sourceView = self.viewController?.view // so that iPads won't crash
             
             if (title != nil && title != "") {
                 activityViewController.setValue(title, forKeyPath: "subject");
             }
             
-            UIApplication.shared.keyWindow?.rootViewController?.present(activityViewController, animated: true, completion: nil)
+            controller.present(activityViewController, animated: true, completion: nil)
             
             result(nil)
             
